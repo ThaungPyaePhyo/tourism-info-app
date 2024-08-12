@@ -10,6 +10,8 @@ class PlaceController extends Controller
     public function getPlaces($city)
     {
         $apiKey = env('FOURSQUARE_API_KEY');
+
+        dd($apiKey);
         $response = Http::get("https://api.foursquare.com/v2/venues/search", [
             'near' => $city,
             'client_id' => $apiKey,
