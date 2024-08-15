@@ -2,23 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use App\Services\PlaceService;
+use GuzzleHttp\Exception\RequestException;
 
 class PlaceController extends Controller
 {
+    public function __construct(protected placeService $placeService)
+    {
+    }
+
     public function getPlaces($city)
     {
-        $apiKey = env('FOURSQUARE_API_KEY');
+        $client = new \GuzzleHttp\Client();
+        $apiKey = config('app.foursquare_api_key');
 
-        dd($apiKey);
-        $response = Http::get("https://api.foursquare.com/v2/venues/search", [
-            'near' => $city,
-            'client_id' => $apiKey,
-            'v' => '20230101',
-            'limit' => 5
-        ]);
-
-        return response()->json($response->json()['response']['venues']);
+        try {
+            $data = $this->placeService->getData($client,$apiKey,$city);
+            return response()->json($data['results']);
+        } catch (RequestException $e) {
+            return response()->json(['error' => 'Unable to fetch places'], 500);
+        }
     }
 }

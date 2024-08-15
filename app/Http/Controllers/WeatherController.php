@@ -2,20 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\WeatherService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
 class WeatherController extends Controller
 {
+    public function __construct(protected WeatherService $weatherService)
+    {
+    }
     public function getWeather($city)
     {
-        $apiKey = env('OPENWEATHER_API_KEY');
-        $response = Http::get("https://api.openweathermap.org/data/2.5/forecast", [
-            'q' => $city,
-            'appid' => $apiKey,
-            'units' => 'metric'
-        ]);
+        $apiKey = config('app.openweather_api_key');
+        try {
+            $data = $this->weatherService->getData($city, $apiKey);
+            return response()->json($data->json());
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Unable to fetch Weather'], 500);
+        }
 
-        return response()->json($response->json());
     }
 }

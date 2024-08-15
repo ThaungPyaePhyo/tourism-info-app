@@ -123,4 +123,6 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'foursquare_api_key' => env('FOURSQUARE_API_KEY'),
+    'openweather_api_key' => env('OPENWEATHER_API_KEY'),
 ];
